@@ -1,6 +1,5 @@
 package com.wallet.bill;
 
-
 import java.time.LocalDate;
 import java.util.*;
 
@@ -21,14 +20,15 @@ public class BillService {
     }
 
     // Tìm bill theo id
-    public Bill getBill(int id) {
+    public Bill viewBill(int id) {
         return bills.get(id);
     }
 
     // Cập nhật bill
     public boolean updateBill(int id, String type, long amount, LocalDate dueDate, String provider) {
         Bill bill = bills.get(id);
-        if (bill == null) return false;
+        if (bill == null)
+            return false;
         bill.setType(type);
         bill.setAmount(amount);
         bill.setDueDate(dueDate);

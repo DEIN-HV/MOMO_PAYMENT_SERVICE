@@ -1,12 +1,13 @@
 package com.wallet.bill;
+
 import java.time.LocalDate;
 
 public class Bill {
     private final int id;
-    private String type;        // ELECTRIC, WATER, INTERNET, ...
+    private String type; // ELECTRIC, WATER, INTERNET, ...
     private long amount;
     private LocalDate dueDate;
-    private String provider;    // EVN HCMC, VNPT, ...
+    private String provider; // EVN HCMC, VNPT, ...
     private boolean paid;
 
     public Bill(int id, String type, long amount, LocalDate dueDate, String provider) {
@@ -38,7 +39,7 @@ public class Bill {
         return provider;
     }
 
-    public boolean isPaid() {
+    public boolean getPaid() {
         return paid;
     }
 
@@ -56,6 +57,10 @@ public class Bill {
 
     public void setProvider(String provider) {
         this.provider = provider;
+    }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
     }
 
     public void markAsPaid() {

@@ -1,4 +1,4 @@
-package com.payment.account;
+package com.wallet.account;
 
 public class Account {
     private long balance;
