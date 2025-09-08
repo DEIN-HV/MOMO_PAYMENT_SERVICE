@@ -11,21 +11,8 @@ public class Account {
         return balance;
     }
 
-    public void cashIn(long amount) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException("Amount must be positive");
-        }
-        balance += amount;
-    }
-
-    public boolean debit(long amount) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException("Amount must be positive");
-        }
-        if (balance >= amount) {
-            balance -= amount;
-            return true;
-        }
-        return false;
+    // package-private (chỉ service gọi được)
+    void setBalance(long balance) {
+        this.balance = balance;
     }
 }
