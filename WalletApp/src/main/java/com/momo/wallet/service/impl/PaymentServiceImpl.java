@@ -83,4 +83,9 @@ public class PaymentServiceImpl implements PaymentService {
                     p.getBillId());
         }
     }
+
+    @Override
+    public List<Payment> getPayments() {
+        return new ArrayList<>(payments);
+    }
 }
