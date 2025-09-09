@@ -2,6 +2,7 @@ package com.wallet.bill;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class BillService {
     private final Map<Integer, Bill> bills = new HashMap<>();
@@ -50,5 +51,13 @@ public class BillService {
             }
         }
         return result;
+    }
+
+    // Lấy danh sách các bill chưa thanh toán
+    public List<Bill> listDueBills() {
+        return bills.values().stream()
+                .filter(b -> !b.getPaid()) 
+                .sorted(Comparator.comparing(Bill::getDueDate)) 
+                .collect(Collectors.toList());
     }
 }

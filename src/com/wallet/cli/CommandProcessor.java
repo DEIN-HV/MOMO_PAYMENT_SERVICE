@@ -8,16 +8,19 @@ import com.wallet.account.AccountService;
 import com.wallet.bill.Bill;
 import com.wallet.bill.BillService;
 import com.wallet.payment.PaymentService;
+import com.wallet.scheduledPayment.ScheduledPaymentService;
 
 public class CommandProcessor {
     private final AccountService accountService;
     private final BillService billService;
     private final PaymentService paymentService;
+    private final ScheduledPaymentService scheduledPaymentService;
 
-    public CommandProcessor(AccountService accountService, BillService billService, PaymentService paymentService) {
+    public CommandProcessor(AccountService accountService, BillService billService, PaymentService paymentService, ScheduledPaymentService scheduledPaymentService) {
         this.accountService = accountService;
         this.billService = billService;
         this.paymentService = paymentService;
+        this.scheduledPaymentService = scheduledPaymentService;
     }
 
     public boolean process(String line) {
@@ -97,6 +100,37 @@ public class CommandProcessor {
                     billIds[i - 1] = Integer.parseInt(inputArgs[i]);
                 }
                 paymentService.payBills(billIds);
+                break;
+            
+            case "SCHEDULE":
+                if (inputArgs.length < 3) {
+                    System.out.println("Usage: SCHEDULE <billId> <dd/MM/yyyy>");
+                    break;
+                }
+                int billId = Integer.parseInt(inputArgs[1]);
+                LocalDate date = LocalDate.parse(inputArgs[2], DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                scheduledPaymentService.schedulePayment(billId, date);
+                break;
+
+            case "DUE_DATE":
+                List<Bill> dueBills = billService.listDueBills();
+                if (dueBills.isEmpty()) {
+                    System.out.println("No due bills.");
+                    break;
+                }
+                System.out.println("Bill No.  Type      Amount   Due Date    State     PROVIDER");
+                for (Bill bi : dueBills) {
+                    System.out.printf("%-10d %-10s %-8d %-12s %-10s %-15s%n",
+                            bi.getId(),
+                            bi.getType(),
+                            bi.getAmount(),
+                            bi.getDueDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                            bi.getPaid() ? "PAID" : "NOT_PAID",
+                            bi.getProvider());
+                }
+
+            case "LIST_PAYMENT":
+                paymentService.listPayments();
                 break;
 
             default:

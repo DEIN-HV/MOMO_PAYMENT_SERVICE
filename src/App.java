@@ -1,18 +1,18 @@
 import java.util.Scanner;
 
-import com.wallet.account.Account;
 import com.wallet.account.AccountService;
 import com.wallet.bill.BillService;
 import com.wallet.cli.CommandProcessor;
 import com.wallet.payment.PaymentService;
+import com.wallet.scheduledPayment.ScheduledPaymentService;
 
 public class App {
     public static void main(String[] args) {
-        Account account = new Account();
-        AccountService accountService = new AccountService(account);
+        AccountService accountService = new AccountService();
         BillService billService = new BillService();
         PaymentService paymentService = new PaymentService(accountService, billService);
-        CommandProcessor processor = new CommandProcessor(accountService, billService, paymentService);
+        ScheduledPaymentService scheduledPaymentService = new ScheduledPaymentService(paymentService, billService);
+        CommandProcessor processor = new CommandProcessor(accountService, billService, paymentService, scheduledPaymentService);
 
         Scanner scanner = new Scanner(System.in);
         while (true) {

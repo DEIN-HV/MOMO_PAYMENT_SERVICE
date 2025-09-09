@@ -1,11 +1,7 @@
 package com.wallet.account;
 
 public class AccountService {
-    private final Account account;
-
-    public AccountService(Account account) {
-        this.account = account;
-    }
+    Account account = new Account();
 
     // Cash in
     public void cashIn(long amount) {

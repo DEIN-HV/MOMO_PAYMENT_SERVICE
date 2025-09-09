@@ -1,6 +1,7 @@
 package com.wallet.payment;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +58,26 @@ public class PaymentService {
         System.out.println("Your current balance is: " + accountService.getBalance());
     }
 
-    public List<Payment> listPayments() {
-        return payments;
+
+    public void recordPayment(Payment payment) {
+        payments.add(payment);
+    }
+
+    public void listPayments() {
+        if (payments.isEmpty()) {
+            System.out.println("No payment records.");
+            return;
+        }
+        System.out.println("No.  Amount   Payment Date  State      Bill Id");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        int i = 1;
+        for (Payment p : payments) {
+            System.out.printf("%-4d %-8d %-12s %-10s %-6d%n",
+                    i++,
+                    p.getAmount(),
+                    p.getPaymentDate().format(formatter),
+                    p.getState(),
+                    p.getBillId());
+        }
     }
 }
