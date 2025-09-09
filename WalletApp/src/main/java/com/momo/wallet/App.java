@@ -10,6 +10,10 @@ import com.momo.wallet.service.AccountService;
 import com.momo.wallet.service.BillService;
 import com.momo.wallet.service.PaymentService;
 import com.momo.wallet.service.ScheduledPaymentService;
+import com.momo.wallet.service.impl.AccountServiceImpl;
+import com.momo.wallet.service.impl.BillServiceImpl;
+import com.momo.wallet.service.impl.PaymentServiceImpl;
+import com.momo.wallet.service.impl.ScheduledPaymentServiceImpl;
 
 /**
  * Hello world!
@@ -17,10 +21,10 @@ import com.momo.wallet.service.ScheduledPaymentService;
  */
 public class App {
     public static void main(String[] args) {
-        AccountService accountService = new AccountService();
-        BillService billService = new BillService();
-        PaymentService paymentService = new PaymentService(accountService, billService);
-        ScheduledPaymentService scheduledPaymentService = new ScheduledPaymentService(paymentService, billService);
+        AccountService accountService = new AccountServiceImpl();
+        BillService billService = new BillServiceImpl();
+        PaymentService paymentService = new PaymentServiceImpl(accountService, billService);
+        ScheduledPaymentService scheduledPaymentService = new ScheduledPaymentServiceImpl(paymentService, billService);
         CommandProcessor processor = new CommandProcessor(accountService, billService, paymentService, scheduledPaymentService);
 
         // Schedule a task to process scheduled payments every hour
