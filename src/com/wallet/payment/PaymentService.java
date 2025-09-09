@@ -2,24 +2,21 @@ package com.wallet.payment;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import com.wallet.account.Account;
 import com.wallet.account.AccountService;
 import com.wallet.bill.Bill;
+import com.wallet.bill.BillService;
 
 public class PaymentService {
-    private final Account account;
     private final AccountService accountService;
-    private final List<Bill> bills;
+    private final BillService billService;
     private final List<Payment> payments;
 
-    public PaymentService(Account account, AccountService accountService, List<Bill> bills) {
-        this.account = account;
+    public PaymentService(AccountService accountService, BillService billService) {
         this.accountService = accountService;
-        this.bills = bills;
+        this.billService = billService;
         this.payments = new ArrayList<>();
     }
 
@@ -27,7 +24,7 @@ public class PaymentService {
         // Sắp xếp theo ngày đến hạn nếu muốn ưu tiên thanh toán
         List<Bill> toPay = new ArrayList<>();
         for (int id : billIds) {
-            Optional<Bill> billOpt = bills.stream()
+            Optional<Bill> billOpt = billService.listBills().stream()
                     .filter(b -> b.getId() == id)
                     .findFirst();
             if (billOpt.isEmpty()) {
@@ -43,7 +40,7 @@ public class PaymentService {
         }
 
         long totalAmount = toPay.stream().mapToLong(Bill::getAmount).sum();
-        if (account.getBalance() < totalAmount) {
+        if (accountService.getBalance() < totalAmount) {
             System.out.println("Sorry! Not enough fund to proceed with payment.");
             return;
         }
@@ -57,7 +54,7 @@ public class PaymentService {
             payments.add(payment);
             System.out.println("Payment has been completed for Bill with id " + bill.getId());
         }
-        System.out.println("Your current balance is: " + account.getBalance());
+        System.out.println("Your current balance is: " + accountService.getBalance());
     }
 
     public List<Payment> listPayments() {

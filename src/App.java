@@ -11,7 +11,7 @@ public class App {
         Account account = new Account();
         AccountService accountService = new AccountService(account);
         BillService billService = new BillService();
-        PaymentService paymentService = new PaymentService(account, accountService, billService.listBills());
+        PaymentService paymentService = new PaymentService(accountService, billService);
         CommandProcessor processor = new CommandProcessor(accountService, billService, paymentService);
 
         Scanner scanner = new Scanner(System.in);
