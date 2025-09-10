@@ -3,8 +3,8 @@ package com.momo.wallet.model;
 import java.time.LocalDate;
 
 public class ScheduledPayment {
-    private final int billId;
-    private final LocalDate scheduledDate;
+    private int billId;
+    private LocalDate scheduledDate;
     private boolean executed;
 
     public ScheduledPayment(int billId, LocalDate scheduledDate) {

@@ -10,8 +10,6 @@ import org.junit.jupiter.api.Test;
 
 import com.momo.wallet.model.Bill;
 import com.momo.wallet.model.Payment;
-import com.momo.wallet.model.Account;
-import com.momo.wallet.model.ScheduledPayment;
 import com.momo.wallet.service.AccountService;
 import com.momo.wallet.service.BillService;
 import com.momo.wallet.service.PaymentService;
@@ -23,15 +21,15 @@ import com.momo.wallet.service.impl.ScheduledPaymentServiceImpl;
 
 public class AppTest {
 
-    private AccountService accountService;
+    private AccountService accountService; // field, không phải local
     private BillService billService;
     private PaymentService paymentService;
     private ScheduledPaymentService scheduledPaymentService;
 
     @BeforeEach
     public void setup() {
-        billService = new BillServiceImpl();
         accountService = new AccountServiceImpl();
+        billService = new BillServiceImpl();
         paymentService = new PaymentServiceImpl(accountService, billService);
         scheduledPaymentService = new ScheduledPaymentServiceImpl(paymentService, billService);
     }
@@ -56,6 +54,8 @@ public class AppTest {
     // CREATE BILL
     @Test
     public void testCreateAndGetBill() {
+        billService = new BillServiceImpl();
+
         Bill bill = billService.createBill("ELECTRIC", 200000, LocalDate.of(2025, 10, 25), "EVN HCMC");
 
         assertNotNull(bill);
@@ -103,6 +103,7 @@ public class AppTest {
     // PAY SINGLE BILL
     @Test
     public void testPayValidBillWithEnoughBalance() {
+
         // nạp tiền vào tài khoản
         accountService.cashIn(500000);
 
@@ -132,15 +133,15 @@ public class AppTest {
 
     // PAY MULTIPLE BILLS
     @Test
-    public void testPayMultipleBillsWithEnoughBalance() {
+    public void testPayMultipleBillsWithNotEnoughBalanceForAll() {
         // nạp tiền đủ để trả nhiều bill
         accountService.cashIn(1000000);
 
         // tạo các bill
-        Bill electricBill = billService.createBill("ELECTRIC", 200000, LocalDate.of(2025, 10, 25), "EVN HCMC");
-        Bill waterBill = billService.createBill("WATER", 150000, LocalDate.of(2025, 10, 30), "SAVACO HCMC");
-        Bill internetBill = billService.createBill("INTERNET", 300000, LocalDate.of(2025, 11, 5), "VNPT");
-
+        Bill electricBill = billService.createBill("ELECTRIC", 500000, LocalDate.of(2025, 10, 25), "EVN HCMC");
+        Bill internetBill = billService.createBill("INTERNET", 200000, LocalDate.of(2025, 11, 5), "VNPT");
+        Bill waterBill = billService.createBill("WATER", 400000, LocalDate.of(2025, 10, 24), "SAVACO HCMC");
+        
         // trước khi thanh toán
         assertFalse(electricBill.getPaid());
         assertFalse(waterBill.getPaid());
@@ -150,22 +151,24 @@ public class AppTest {
         // tiến hành thanh toán nhiều bill
         paymentService.payBills(electricBill.getId(), waterBill.getId(), internetBill.getId());
 
-        // sau khi thanh toán: tất cả bill đều paid
+        // sau khi thanh toán: bill ELECTRIC và WATER phải được mark là paid do có due date gần hơn, 
+        // bill INTERNET vẫn chưa paid do thiêu tiền
         assertTrue(electricBill.getPaid());
         assertTrue(waterBill.getPaid());
-        assertTrue(internetBill.getPaid());
+        assertFalse(internetBill.getPaid());
 
         // số dư giảm đúng
-        long expectedBalance = 1000000 - (200000 + 150000 + 300000);
+        long expectedBalance = 1000000 - (500000 + 400000);
         assertEquals(expectedBalance, accountService.getBalance());
 
-        // có 3 record payment
+        // có 2 record payment
         List<Payment> payments = paymentService.getPayments();
-        assertEquals(3, payments.size());
+        assertEquals(2, payments.size());
 
         // kiểm tra từng billId có trong payments
         assertTrue(payments.stream().anyMatch(p -> p.getBillId() == electricBill.getId()));
         assertTrue(payments.stream().anyMatch(p -> p.getBillId() == waterBill.getId()));
+        assertFalse(payments.stream().anyMatch(p -> p.getBillId() == internetBill.getId()));
     }
 
     // KEEP TRACK OF BILL

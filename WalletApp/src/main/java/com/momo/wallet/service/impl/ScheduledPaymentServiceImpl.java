@@ -1,4 +1,3 @@
-// ScheduledPaymentServiceImpl.java
 package com.momo.wallet.service.impl;
 
 import java.time.LocalDate;

@@ -3,9 +3,9 @@ package com.momo.wallet.model;
 import java.time.LocalDate;
 
 public class Payment {
-    private final long amount;
-    private final LocalDate paymentDate;
-    private final int billId;
+    private long amount;
+    private LocalDate paymentDate;
+    private int billId;
     private PaymentState state;
 
     public enum PaymentState {

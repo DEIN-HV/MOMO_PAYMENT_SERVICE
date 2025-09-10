@@ -4,6 +4,7 @@ package com.momo.wallet.service.impl;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,38 +28,40 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void payBills(int... billIds) {
         List<Bill> toPay = new ArrayList<>();
+
         for (int id : billIds) {
             Optional<Bill> billOpt = billService.listBills().stream()
                     .filter(b -> b.getId() == id)
                     .findFirst();
-            if (billOpt.isEmpty()) {
-                System.out.println("Sorry! Not found a bill with such id: " + id);
-                return;
-            }
             Bill bill = billOpt.get();
             if (bill.getPaid()) {
                 System.out.println("Bill already paid: " + id);
-                return;
+                continue; 
             }
             toPay.add(bill);
         }
 
-        long totalAmount = toPay.stream().mapToLong(Bill::getAmount).sum();
-        if (accountService.getBalance() < totalAmount) {
-            System.out.println("Sorry! Not enough fund to proceed with payment.");
-            return;
+        // Sort for dueDate
+        toPay.sort(Comparator.comparing(Bill::getDueDate));
+
+        // Pay per bill
+        for (Bill bill : toPay) {
+            long balance = accountService.getBalance();
+            if (balance >= bill.getAmount()) {
+                accountService.debit(bill.getAmount());
+                bill.setPaid(true);
+                Payment payment = new Payment(bill.getAmount(), LocalDate.now(), bill.getId(),
+                        Payment.PaymentState.PROCESSED);
+                payments.add(payment);
+                System.out.println("Payment completed for bill id " + bill.getId());
+            } else {
+                System.out.println("Insufficient funds for bill id " + bill.getId());
+            }
         }
 
-        for (Bill bill : toPay) {
-            accountService.debit(bill.getAmount());
-            bill.setPaid(true);
-            Payment payment = new Payment(bill.getAmount(), LocalDate.now(), bill.getId(),
-                    Payment.PaymentState.PROCESSED);
-            payments.add(payment);
-            System.out.println("Payment has been completed for Bill with id " + bill.getId());
-        }
         System.out.println("Your current balance is: " + accountService.getBalance());
     }
+
 
     @Override
     public void recordPayment(Payment payment) {

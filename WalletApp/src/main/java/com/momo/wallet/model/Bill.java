@@ -3,11 +3,11 @@ package com.momo.wallet.model;
 import java.time.LocalDate;
 
 public class Bill {
-    private final int id;
-    private String type; // ELECTRIC, WATER, INTERNET, ...
+    private int id;
+    private String type; 
     private long amount;
     private LocalDate dueDate;
-    private String provider; // EVN HCMC, VNPT, ...
+    private String provider;
     private boolean paid;
 
     public Bill(int id, String type, long amount, LocalDate dueDate, String provider) {
@@ -61,10 +61,6 @@ public class Bill {
 
     public void setPaid(boolean paid) {
         this.paid = paid;
-    }
-
-    public void markAsPaid() {
-        this.paid = true;
     }
 
     @Override

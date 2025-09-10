@@ -1,9 +1,7 @@
-// AccountServiceImpl.java
 package com.momo.wallet.service.impl;
 
 import com.momo.wallet.model.Account;
 import com.momo.wallet.service.AccountService;
-
 public class AccountServiceImpl implements AccountService {
     private Account account = new Account();
 
